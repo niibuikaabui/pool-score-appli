@@ -1,0 +1,378 @@
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">ビリヤード得点アプリの遊び方イメージ。履歴の交代表記から「ミス」の文字を外しました。</h2>
+
+<div id="mainPlayArea">
+
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; gap:8px; flex-wrap:wrap;">
+  <div style="display:flex; align-items:center; gap:8px;">
+    <span id="rackLabel" style="font-size:15px; font-weight:500;">ラック 1</span>
+    <span id="shooterLabel" style="font-size:12px; color:var(--color-text-tertiary); background:var(--color-background-secondary); padding:3px 9px; border-radius:999px;">1人目</span>
+  </div>
+  <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+    <button onclick="openOrderModal()" style="display:flex; align-items:center; gap:6px;"><i class="ti ti-arrows-sort" aria-hidden="true" style="font-size:16px;"></i>順番変更</button>
+    <button id="addMemberBtn" onclick="addPlayer()" style="display:flex; align-items:center; gap:6px; transition:opacity .15s;"><i class="ti ti-user-plus" aria-hidden="true" style="font-size:16px;"></i>メンバー追加</button>
+    <button onclick="showEndConfirm()" style="display:flex; align-items:center; gap:6px; background:#F2E3E3; color:#7A2E2E; border:1.5px solid #B5453F; border-radius:var(--border-radius-md); padding:7px 12px; font-size:13px; font-weight:500; cursor:pointer;"><i class="ti ti-square-rounded-x" aria-hidden="true" style="font-size:16px;"></i>ゲーム終了</button>
+  </div>
+</div>
+
+<div id="addConfirm" style="display:none; background:var(--color-background-secondary); border-radius:var(--border-radius-lg); padding:12px 16px; margin-bottom:1rem; text-align:center;">
+  <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:8px;">メンバーを追加しますか?</div>
+  <div style="display:flex; gap:8px; justify-content:center;">
+    <button onclick="cancelAddPlayer()">キャンセル</button>
+    <button onclick="confirmAddPlayer()" style="background:var(--color-background-info); color:var(--color-text-info); border:none; border-radius:var(--border-radius-md); padding:8px 14px; font-size:14px; font-weight:500; cursor:pointer;">追加する</button>
+  </div>
+</div>
+
+<div id="endConfirm" style="display:none; background:var(--color-background-secondary); border-radius:var(--border-radius-lg); padding:14px 16px; margin-bottom:1rem; text-align:center;">
+  <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:10px;">本当にゲームを終了しますか?この操作は元に戻せません。</div>
+  <div style="display:flex; gap:8px; justify-content:center;">
+    <button onclick="cancelEnd()">キャンセル</button>
+    <button onclick="confirmEnd()" style="background:#B5453F; color:#FFFFFF; border:none; border-radius:var(--border-radius-md); padding:8px 14px; font-size:14px; font-weight:500; cursor:pointer;">終了する</button>
+  </div>
+</div>
+
+<div id="orderModalWrap" style="display:none; min-height:300px; background:rgba(0,0,0,0.45); border-radius:var(--border-radius-lg); align-items:center; justify-content:center; margin-bottom:1rem;">
+  <div style="background:var(--color-background-primary); border-radius:var(--border-radius-lg); padding:1.25rem; width:240px;">
+    <div style="font-size:14px; font-weight:500; margin-bottom:4px;">打順を変更</div>
+    <div style="font-size:11px; color:var(--color-text-tertiary); margin-bottom:10px;">現在の手番の人は1番目に固定。それ以外をランダムや手動で並び替えできます</div>
+    <button onclick="randomizeOrder()" style="width:100%; display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:10px;"><i class="ti ti-arrows-shuffle" aria-hidden="true" style="font-size:15px;"></i>ランダムに並び替え</button>
+    <div id="orderList"></div>
+    <button onclick="confirmOrder()" style="width:100%; margin-top:12px;">決定</button>
+  </div>
+</div>
+
+<div id="cards" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-bottom:1rem;"></div>
+
+<div id="turnLabel" style="text-align:center; font-size:13px; color:var(--color-text-secondary); margin-bottom:8px;"></div>
+<div id="sharedButtons" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:1rem;">
+  <button onclick="addPoint(1)" class="score-btn" style="border:none; border-radius:var(--border-radius-md); padding:16px 0; font-size:20px; font-weight:500; cursor:pointer;">+1</button>
+  <button onclick="addPoint(2)" class="score-btn" style="border:none; border-radius:var(--border-radius-md); padding:16px 0; font-size:20px; font-weight:500; cursor:pointer;">+2</button>
+  <button onclick="addPoint(4)" class="score-btn" style="border:none; border-radius:var(--border-radius-md); padding:16px 0; font-size:20px; font-weight:500; cursor:pointer;">+4</button>
+</div>
+
+<div style="display:flex; align-items:center; gap:8px;">
+  <div style="flex:1; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+    <button onclick="passTurn()" style="display:flex; align-items:center; gap:6px;"><i class="ti ti-player-track-next" aria-hidden="true" style="font-size:16px;"></i>次のプレイヤー</button>
+    <button id="nextRackBtn" onclick="handleNextRack()" style="display:flex; align-items:center; gap:6px; background:var(--color-background-info); color:var(--color-text-info); border:none; border-radius:var(--border-radius-md); padding:8px 14px; font-size:14px; font-weight:500; cursor:pointer; transition:opacity .15s;"><i class="ti ti-flag" aria-hidden="true" style="font-size:16px;"></i>次のラック</button>
+  </div>
+  <button onclick="toggleHistory()" style="display:flex; align-items:center; gap:6px; flex-shrink:0;"><i class="ti ti-history" aria-hidden="true" style="font-size:16px;"></i>履歴</button>
+  <button onclick="undo()" aria-label="取り消し" style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; padding:0; border:none; background:transparent; color:var(--color-text-tertiary); cursor:pointer; flex-shrink:0;"><i class="ti ti-arrow-back-up" aria-hidden="true" style="font-size:16px;"></i></button>
+</div>
+
+<div id="finishPrompt" style="display:none; background:var(--color-background-secondary); border-radius:var(--border-radius-lg); padding:12px 16px; margin-top:10px; text-align:center;">
+  <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:8px;">このラック、マスワリでしたか?</div>
+  <div style="display:flex; gap:8px; justify-content:center;">
+    <button onclick="finishRack(true)">はい(2倍)</button>
+    <button onclick="finishRack(false)">いいえ</button>
+  </div>
+</div>
+
+<div id="historyPanel" style="display:none; margin-top:12px;">
+  <div style="font-size:13px; font-weight:500; color:var(--color-text-secondary); margin-bottom:6px;">履歴</div>
+  <div id="logList"></div>
+</div>
+
+</div>
+<div id="endSummary" style="display:none;"></div>
+
+<script>
+const palette = [
+  {bg:'#F2E4DC', btnBg:'#DCB8A3', accent:'#B5623A', text:'#4A2A18', subtext:'#7A4527', name:'プレイヤー1'},
+  {bg:'#E3EAE3', btnBg:'#B9CDB8', accent:'#5E8267', text:'#26392A', subtext:'#42624A', name:'プレイヤー2'},
+  {bg:'#F1E8D6', btnBg:'#D9C291', accent:'#AD8434', text:'#4A3717', subtext:'#7A5C24', name:'プレイヤー3'},
+  {bg:'#E9E2EE', btnBg:'#C9B6D6', accent:'#7C5C9E', text:'#352640', subtext:'#5A4470', name:'プレイヤー4'},
+  {bg:'#E1E8EE', btnBg:'#AFC4D6', accent:'#4A7396', text:'#1E2E3B', subtext:'#36556D', name:'プレイヤー5'},
+  {bg:'#F0E2E6', btnBg:'#D9AEBC', accent:'#A0566E', text:'#3F1B26', subtext:'#6B3548', name:'プレイヤー6'}
+];
+const circledNum = {1:'①', 2:'②', 4:'④'};
+let activeCount = 3;
+let scores = new Array(6).fill(0);
+let rackDelta = new Array(6).fill(0);
+let rackShots = Array.from({length:6},()=>[]);
+let turnOrder = [0,1,2];
+let currentPlayerIdx = 0;
+let rackNumber = 1;
+let shooterCount = 1;
+let rackInProgress = false;
+let actionLog = [];
+let undoStack = [];
+let historyOpen = false;
+
+const cardsEl = document.getElementById('cards');
+
+function addPlayerCard(i){
+  const c = palette[i];
+  const card = document.createElement('div');
+  card.className = 'player-card';
+  card.dataset.idx = i;
+  card.style.cssText = `background:var(--color-background-secondary); border-radius:var(--border-radius-lg); padding:1rem; border:3px solid transparent; transition:transform .15s, background-color .15s, border-color .15s;`;
+  card.innerHTML = `
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span class="dot" style="width:8px; height:8px; border-radius:50%; background:${c.accent}; flex-shrink:0;"></span>
+        <span class="name" style="font-size:14px; font-weight:500; color:var(--color-text-primary);">${c.name}</span>
+      </div>
+      <span class="turn-badge" style="display:none; font-size:12px; padding:3px 10px; border-radius:999px; font-weight:500;">手番</span>
+    </div>
+    <div class="total" style="font-size:48px; font-weight:500; color:var(--color-text-primary); line-height:1; margin-bottom:4px;">0</div>
+    <div class="rack-sub" style="font-size:12px; color:var(--color-text-tertiary); margin-bottom:10px;">このラック ±0</div>
+    <div class="shots" style="min-height:22px; display:flex; flex-wrap:wrap; gap:4px;"></div>`;
+  cardsEl.appendChild(card);
+}
+for(let i=0;i<activeCount;i++){ addPlayerCard(i); }
+
+function addPlayer(){
+  if(rackInProgress || activeCount >= palette.length) return;
+  document.getElementById('addConfirm').style.display='block';
+}
+function cancelAddPlayer(){ document.getElementById('addConfirm').style.display='none'; }
+function confirmAddPlayer(){
+  const newIdx = activeCount;
+  activeCount++;
+  turnOrder.push(newIdx);
+  addPlayerCard(newIdx);
+  document.getElementById('addConfirm').style.display='none';
+  render();
+}
+
+function snapshot(){
+  undoStack.push({
+    scores:[...scores], rackDelta:[...rackDelta], rackShots: rackShots.map(a=>[...a]),
+    currentPlayerIdx, turnOrder:[...turnOrder], rackNumber, rackInProgress, shooterCount,
+    actionLog: actionLog.map(e=>({...e}))
+  });
+  if(undoStack.length>20) undoStack.shift();
+}
+
+function addPoint(pts){
+  snapshot();
+  rackInProgress = true;
+  const idx = currentPlayerIdx;
+  for(let i=0;i<activeCount;i++){
+    if(i===idx){
+      const gain = pts*(activeCount-1);
+      scores[i]+=gain; rackDelta[i]+=gain;
+    } else {
+      scores[i]-=pts; rackDelta[i]-=pts;
+    }
+  }
+  rackShots[idx].push(pts);
+  actionLog.unshift({type:'point', rack:rackNumber, player:idx, pts});
+  render();
+}
+
+function passTurn(){
+  snapshot();
+  rackInProgress = true;
+  shooterCount++;
+  const missedIdx = currentPlayerIdx;
+  const pos = turnOrder.indexOf(currentPlayerIdx);
+  const nextPos = (pos+1)%turnOrder.length;
+  currentPlayerIdx = turnOrder[nextPos];
+  actionLog.unshift({type:'pass', rack:rackNumber, missed:missedIdx, next:currentPlayerIdx});
+  render();
+}
+
+function countScorers(){
+  let c=0;
+  for(let i=0;i<activeCount;i++){ if(rackShots[i].length>0) c++; }
+  return c;
+}
+
+function handleNextRack(){
+  if(countScorers()===0) return;
+  if(countScorers() > 1){
+    finishRack(false);
+  } else {
+    document.getElementById('finishPrompt').style.display='block';
+  }
+}
+function hideFinishPrompt(){ document.getElementById('finishPrompt').style.display='none'; }
+
+function finishRack(isMasuwari){
+  snapshot();
+  const finalDeltas = rackDelta.slice(0,activeCount).map(d=> isMasuwari ? d*2 : d);
+  if(isMasuwari){ for(let i=0;i<activeCount;i++){ scores[i]+=rackDelta[i]; } }
+  actionLog.unshift({type:'rackend', rack:rackNumber, masuwari:isMasuwari, deltas:finalDeltas});
+  rackDelta = new Array(6).fill(0);
+  rackShots = Array.from({length:6},()=>[]);
+  rackNumber += 1;
+  shooterCount = 1;
+  rackInProgress = false;
+  hideFinishPrompt();
+  render();
+}
+
+function undo(){
+  if(undoStack.length===0) return;
+  const last = undoStack.pop();
+  scores=last.scores; rackDelta=last.rackDelta; rackShots=last.rackShots;
+  currentPlayerIdx=last.currentPlayerIdx; turnOrder=last.turnOrder;
+  rackNumber=last.rackNumber; actionLog=last.actionLog; rackInProgress=last.rackInProgress;
+  shooterCount=last.shooterCount;
+  render();
+}
+
+function openOrderModal(){
+  snapshot();
+  renderOrderList();
+  document.getElementById('orderModalWrap').style.display='flex';
+}
+function closeOrderModal(){ document.getElementById('orderModalWrap').style.display='none'; }
+function moveOrder(pos, dir){
+  const newPos = pos+dir;
+  if(newPos<0 || newPos>=turnOrder.length) return;
+  [turnOrder[pos], turnOrder[newPos]] = [turnOrder[newPos], turnOrder[pos]];
+  renderOrderList();
+  render();
+}
+function arraysEqual(a,b){
+  if(a.length!==b.length) return false;
+  for(let i=0;i<a.length;i++){ if(a[i]!==b[i]) return false; }
+  return true;
+}
+function randomizeOrder(){
+  const others = turnOrder.filter(p => p !== currentPlayerIdx);
+  if(others.length <= 1){
+    turnOrder = [currentPlayerIdx, ...others];
+    renderOrderList();
+    render();
+    return;
+  }
+  let shuffled;
+  let guard = 0;
+  do {
+    shuffled = [...others];
+    for(let i=shuffled.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    guard++;
+  } while(arraysEqual(shuffled, others) && guard<20);
+  turnOrder = [currentPlayerIdx, ...shuffled];
+  renderOrderList();
+  render();
+}
+function confirmOrder(){
+  actionLog.unshift({type:'orderchange', rack:rackNumber});
+  closeOrderModal();
+  render();
+}
+function renderOrderList(){
+  const el = document.getElementById('orderList');
+  el.innerHTML = turnOrder.map((pIdx,pos)=>{
+    const c = palette[pIdx];
+    const isFixed = (pIdx===currentPlayerIdx);
+    return `<div style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:0.5px solid var(--color-border-tertiary);">
+      <span style="width:10px; height:10px; border-radius:50%; background:${c.accent}; flex-shrink:0;"></span>
+      <span style="font-size:13px; flex:1;">${c.name}${isFixed?' (手番中)':''}</span>
+      ${isFixed ? '' : `<button onclick="moveOrder(${pos},-1)" aria-label="上へ" style="padding:2px 8px;"><i class="ti ti-chevron-up" aria-hidden="true" style="font-size:14px;"></i></button>
+      <button onclick="moveOrder(${pos},1)" aria-label="下へ" style="padding:2px 8px;"><i class="ti ti-chevron-down" aria-hidden="true" style="font-size:14px;"></i></button>`}
+    </div>`;
+  }).join('');
+}
+
+function toggleHistory(){
+  historyOpen = !historyOpen;
+  document.getElementById('historyPanel').style.display = historyOpen ? 'block' : 'none';
+  if(historyOpen) renderLog();
+}
+function formatLogEntry(e){
+  if(e.type==='point') return {color:palette[e.player].accent, label:`${palette[e.player].name} ${circledNum[e.pts]||('+'+e.pts)}`, sub:`ラック${e.rack}`};
+  if(e.type==='pass') return {color:'var(--color-border-secondary)', label:`${palette[e.missed].name} → ${palette[e.next].name}`, sub:`ラック${e.rack}`};
+  if(e.type==='rackend'){
+    const detail = e.deltas.map((d,i)=>`${palette[i].name} ${d>0?'+':''}${d}`).join(' / ');
+    return {color:'var(--color-text-primary)', label:`ラック${e.rack} 終了${e.masuwari?'・マスワリ!':''}`, sub:detail};
+  }
+  return {color:'var(--color-text-secondary)', label:'打順を変更', sub:`ラック${e.rack}`};
+}
+function renderLog(){
+  const el = document.getElementById('logList');
+  if(actionLog.length===0){ el.innerHTML = `<div style="font-size:13px; color:var(--color-text-tertiary); padding:8px 0;">まだ記録がありません</div>`; return; }
+  el.innerHTML = actionLog.slice(0,15).map(e=>{
+    const f = formatLogEntry(e);
+    return `<div style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:0.5px solid var(--color-border-tertiary);">
+      <span style="width:8px; height:8px; border-radius:50%; background:${f.color}; flex-shrink:0;"></span>
+      <span style="font-size:13px; flex:1;">${f.label}</span>
+      <span style="font-size:12px; color:var(--color-text-tertiary);">${f.sub}</span>
+    </div>`;
+  }).join('');
+}
+
+function showEndConfirm(){ document.getElementById('endConfirm').style.display='block'; }
+function cancelEnd(){ document.getElementById('endConfirm').style.display='none'; }
+function confirmEnd(){
+  document.getElementById('mainPlayArea').style.display='none';
+  const summaryEl = document.getElementById('endSummary');
+  const sorted = [];
+  for(let i=0;i<activeCount;i++){ sorted.push({s:scores[i], i}); }
+  sorted.sort((a,b)=>b.s-a.s);
+  summaryEl.innerHTML = `<div style="text-align:center; font-size:16px; font-weight:500; margin-bottom:16px; color:var(--color-text-primary);">お疲れさまでした</div>` +
+    sorted.map((p,rank)=>{
+      const c = palette[p.i];
+      return `<div style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:${c.bg}; border-radius:var(--border-radius-md); margin-bottom:8px;">
+        <span style="font-size:13px; color:${c.subtext}; width:20px;">${rank+1}</span>
+        <span style="flex:1; font-size:14px; font-weight:500; color:${c.text};">${c.name}</span>
+        <span style="font-size:22px; font-weight:500; color:${c.text};">${p.s}</span>
+      </div>`;
+    }).join('');
+  summaryEl.style.display='block';
+}
+
+function render(){
+  document.getElementById('rackLabel').textContent = `ラック ${rackNumber}`;
+  document.getElementById('shooterLabel').textContent = `${shooterCount}人目`;
+  document.getElementById('turnLabel').textContent = `${palette[currentPlayerIdx].name} の得点を追加`;
+  document.querySelectorAll('.score-btn').forEach(btn=>{
+    btn.style.background = palette[currentPlayerIdx].btnBg;
+    btn.style.color = palette[currentPlayerIdx].text;
+  });
+  const addBtn = document.getElementById('addMemberBtn');
+  const addDisabled = rackInProgress || activeCount>=palette.length;
+  addBtn.style.opacity = addDisabled ? '0.4' : '1';
+  addBtn.style.pointerEvents = addDisabled ? 'none' : 'auto';
+  const nextRackBtn = document.getElementById('nextRackBtn');
+  const nextRackDisabled = countScorers()===0;
+  nextRackBtn.style.opacity = nextRackDisabled ? '0.4' : '1';
+  nextRackBtn.style.pointerEvents = nextRackDisabled ? 'none' : 'auto';
+  for(let i=0;i<activeCount;i++){
+    const card = document.querySelector(`.player-card[data-idx="${i}"]`);
+    const c = palette[i];
+    const nameEl = card.querySelector('.name');
+    const totalEl = card.querySelector('.total');
+    const subEl = card.querySelector('.rack-sub');
+    const badgeEl = card.querySelector('.turn-badge');
+    const shotsEl = card.querySelector('.shots');
+    card.style.order = turnOrder.indexOf(i);
+    totalEl.textContent = scores[i];
+    const rd = rackDelta[i];
+    subEl.textContent = `このラック ${rd>0?'+':''}${rd}`;
+    if(rackShots[i].length===0){
+      shotsEl.innerHTML = `<span style="font-size:12px; color:var(--color-text-tertiary); opacity:.6;">まだなし</span>`;
+    } else {
+      shotsEl.innerHTML = rackShots[i].map(p=>`<span style="font-size:17px; color:${c.accent};">${circledNum[p]}</span>`).join('');
+    }
+    const isTurn = (i===currentPlayerIdx);
+    if(isTurn){
+      card.style.background = c.bg;
+      card.style.borderColor = c.accent;
+      card.style.transform = 'scale(1.02)';
+      nameEl.style.color = c.text;
+      totalEl.style.color = c.text;
+      subEl.style.color = c.subtext;
+      badgeEl.style.display = 'inline-block';
+      badgeEl.style.background = c.accent;
+      badgeEl.style.color = c.text;
+    } else {
+      card.style.background = 'var(--color-background-secondary)';
+      card.style.borderColor = 'transparent';
+      card.style.transform = 'scale(1)';
+      nameEl.style.color = 'var(--color-text-primary)';
+      totalEl.style.color = 'var(--color-text-primary)';
+      subEl.style.color = 'var(--color-text-tertiary)';
+      badgeEl.style.display = 'none';
+    }
+  }
+  if(historyOpen) renderLog();
+}
+render();
+</script>
