@@ -138,9 +138,19 @@ export function ScoreScreen({
             {state.turnCountInRack}人目
           </span>
         </div>
-        <button onClick={() => openSettings('order')} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <i className="ti ti-settings" style={{ fontSize: 16 }} />設定
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <button onClick={() => openSettings('order')} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <i className="ti ti-settings" style={{ fontSize: 16 }} />設定
+          </button>
+          <button
+            onClick={onUndo}
+            disabled={!canUndo}
+            aria-label="取り消し"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, padding: 0, border: 'none', background: 'transparent', color: 'var(--color-text-tertiary)', opacity: canUndo ? 1 : 0.3 }}
+          >
+            <i className="ti ti-arrow-back-up" style={{ fontSize: 16 }} />
+          </button>
+        </div>
       </div>
 
       {/* プレイヤーカード */}
@@ -187,14 +197,6 @@ export function ScoreScreen({
             <i className="ti ti-flag" style={{ fontSize: 16 }} />次のラック
           </button>
         </div>
-        <button
-          onClick={onUndo}
-          disabled={!canUndo}
-          aria-label="取り消し"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, padding: 0, border: 'none', background: 'transparent', color: 'var(--color-text-tertiary)', flexShrink: 0, opacity: canUndo ? 1 : 0.3 }}
-        >
-          <i className="ti ti-arrow-back-up" style={{ fontSize: 16 }} />
-        </button>
       </div>
 
       {/* ゲーム終了ボタン（最下部） */}
