@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { GameState, PointValue } from '../types'
 import { PLAYER_COLORS, isMasuwariPossible } from '../logic'
 import { PlayerCard } from './PlayerCard'
@@ -41,6 +41,16 @@ export function ScoreScreen({
   const [showEndConfirm, setShowEndConfirm] = useState(false)
   const [showAddConfirm, setShowAddConfirm] = useState(false)
   const [newPlayerName, setNewPlayerName] = useState('')
+  const [flashing, setFlashing] = useState(false)
+  const prevRackRef = useRef(state.rackNumber)
+
+  useEffect(() => {
+    if (state.rackNumber !== prevRackRef.current) {
+      prevRackRef.current = state.rackNumber
+      setFlashing(true)
+      setTimeout(() => setFlashing(false), 400)
+    }
+  }, [state.rackNumber])
 
   const currentPlayer = state.players[state.currentPlayerIdx]
   const currentColor = PLAYER_COLORS[state.currentPlayerIdx % PLAYER_COLORS.length]
@@ -77,7 +87,10 @@ export function ScoreScreen({
   const addDisabled = rackInProgress || state.players.length >= 6
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--color-background-primary)', padding: '0 0 16px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--color-background-primary)', padding: '0 0 16px', position: 'relative', overflow: 'hidden' }}>
+      {flashing && (
+        <div style={{ position: 'fixed', inset: 0, background: '#fff', zIndex: 100, animation: 'rack-flash 0.4s ease-out forwards', pointerEvents: 'none' }} />
+      )}
       {/* トップバー */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', gap: 8, flexWrap: 'wrap', padding: '12px 24px 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
