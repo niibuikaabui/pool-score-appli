@@ -96,28 +96,23 @@ export function ScoreScreen({
           >
             <i className="ti ti-user-plus" style={{ fontSize: 16 }} />メンバー追加
           </button>
-          <button onClick={() => setShowEndConfirm(true)} style={{ ...dangerBtn, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <i className="ti ti-square-rounded-x" style={{ fontSize: 16 }} />ゲーム終了
-          </button>
         </div>
       </div>
 
-      {/* メンバー追加確認 */}
       {showAddConfirm && (
-        <div style={{ background: 'var(--color-background-secondary)', borderRadius: 'var(--border-radius-lg)', padding: '12px 16px', marginBottom: '1rem', marginInline: 16, textAlign: 'center' }}>
-          <div style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 8 }}>メンバーを追加しますか?</div>
+        <Modal title="メンバーを追加" onClose={() => { setShowAddConfirm(false); setNewPlayerName('') }}>
           <input
             value={newPlayerName}
             onChange={e => setNewPlayerName(e.target.value)}
             placeholder={`プレイヤー${state.players.length + 1}`}
-            style={{ width: '100%', marginBottom: 8 }}
+            style={{ width: '100%', marginBottom: 12 }}
             autoFocus
           />
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-            <button onClick={() => { setShowAddConfirm(false); setNewPlayerName('') }}>キャンセル</button>
-            <button onClick={handleAddConfirm} style={infoBtn}>追加する</button>
-          </div>
-        </div>
+          <ModalActions>
+            <ModalButton onClick={() => { setShowAddConfirm(false); setNewPlayerName('') }}>キャンセル</ModalButton>
+            <ModalButton onClick={handleAddConfirm} variant="primary">追加する</ModalButton>
+          </ModalActions>
+        </Modal>
       )}
 
 
@@ -207,6 +202,13 @@ export function ScoreScreen({
           />
         </div>
       )}
+
+      {/* ゲーム終了ボタン（最下部） */}
+      <div style={{ padding: '16px 16px 0' }}>
+        <button onClick={() => setShowEndConfirm(true)} style={{ ...dangerBtn, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%', padding: '11px 0' }}>
+          <i className="ti ti-square-rounded-x" style={{ fontSize: 16 }} />ゲーム終了
+        </button>
+      </div>
 
       {show10Rack && (
         <Modal title={`${state.rackNumber - 1}ラック終了`} description="現在の成績">
