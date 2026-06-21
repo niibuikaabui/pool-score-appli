@@ -79,7 +79,7 @@ export function ScoreScreen({
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-background-primary)', padding: '0 0 16px' }}>
       {/* トップバー */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', gap: 8, flexWrap: 'wrap', padding: '12px 16px 0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', gap: 8, flexWrap: 'wrap', padding: '12px 24px 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 15, fontWeight: 500 }}>ラック {state.rackNumber}</span>
           <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)', background: 'var(--color-background-secondary)', padding: '3px 9px', borderRadius: 999 }}>
@@ -117,7 +117,7 @@ export function ScoreScreen({
 
 
       {/* プレイヤーカード */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 14, marginBottom: '1rem', padding: '0 16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 14, marginBottom: '1rem', padding: '0 24px' }}>
         {state.turnOrder.map((playerIdx, order) => (
           <PlayerCard
             key={playerIdx}
@@ -133,7 +133,7 @@ export function ScoreScreen({
 
 
       {/* 得点ボタン */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: '1rem', padding: '0 16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: '1rem', padding: '0 24px' }}>
         {([1, 2, 4] as PointValue[]).map(v => (
           <button
             key={v}
@@ -146,7 +146,7 @@ export function ScoreScreen({
       </div>
 
       {/* 操作ボタン行 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 24px' }}>
         <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           <button
             onClick={onPass}
@@ -204,7 +204,7 @@ export function ScoreScreen({
       )}
 
       {/* ゲーム終了ボタン（最下部） */}
-      <div style={{ padding: '16px 16px 0' }}>
+      <div style={{ padding: '16px 24px 0' }}>
         <button onClick={() => setShowEndConfirm(true)} style={{ ...dangerBtn, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%', padding: '11px 0' }}>
           <i className="ti ti-square-rounded-x" style={{ fontSize: 16 }} />ゲーム終了
         </button>
