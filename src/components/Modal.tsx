@@ -17,7 +17,14 @@ export function Modal({ title, description, children, onClose }: Props) {
         style={{ background: 'var(--color-background-primary)', borderRadius: 'var(--border-radius-lg)', padding: '1.25rem', width: 260, boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}
         onClick={e => e.stopPropagation()}
       >
-        <div style={{ fontSize: 14, fontWeight: 500, marginBottom: description ? 4 : 16 }}>{title}</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: description ? 4 : 16 }}>
+          <span style={{ fontSize: 14, fontWeight: 500 }}>{title}</span>
+          {onClose && (
+            <button onClick={onClose} aria-label="閉じる" style={{ background: 'transparent', border: 'none', padding: '0 0 0 8px', color: 'var(--color-text-tertiary)', fontSize: 18, lineHeight: 1, display: 'flex', alignItems: 'center' }}>
+              <i className="ti ti-x" style={{ fontSize: 16 }} />
+            </button>
+          )}
+        </div>
         {description && (
           <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginBottom: 16 }}>{description}</div>
         )}
