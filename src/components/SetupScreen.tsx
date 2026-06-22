@@ -49,7 +49,7 @@ export function SetupScreen({ onStart }: Props) {
 
         <button
           onClick={() => onStart(filled, 5, 9)}
-          style={{ width: '100%', padding: '14px 0', fontSize: 16, fontWeight: 600, background: 'var(--color-background-info)', color: 'var(--color-text-info)', border: 'none', borderRadius: 'var(--border-radius-lg)' }}
+          style={{ width: '100%', padding: '14px 0', fontSize: 16, fontWeight: 600, background: 'var(--color-accent)', color: 'var(--color-accent-contrast)', border: 'none', borderRadius: 'var(--border-radius-lg)' }}
         >
           ゲーム開始
         </button>

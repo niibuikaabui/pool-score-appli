@@ -51,7 +51,7 @@ export function HistoryPanel({ history, playerNames, onClose }: Props) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-text-primary)', flexShrink: 0, display: 'inline-block' }} />
                   <span style={{ fontSize: 13, fontWeight: 500 }}>
-                    ラック{event.rackNumber} 終了{event.masuwari && <span style={{ color: '#AD8434' }}>・マスワリ!</span>}
+                    ラック{event.rackNumber} 終了{event.masuwari && <span style={{ color: 'var(--color-warning)' }}>・マスワリ!</span>}
                   </span>
                 </div>
                 <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 2, paddingLeft: 16 }}>{detail}</div>

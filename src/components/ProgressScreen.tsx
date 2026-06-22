@@ -163,7 +163,7 @@ export function ProgressScreen({ state }: Props) {
             {rackEndEvents.slice((currentPage) * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE).map(event => (
               <tr key={event.rackNumber} style={{ borderBottom: '0.5px solid var(--color-border-tertiary)' }}>
                 <td style={{ padding: '5px 4px', color: 'var(--color-text-tertiary)' }}>
-                  {event.rackNumber}{event.masuwari && <span style={{ color: '#AD8434' }}>★</span>}
+                  {event.rackNumber}{event.masuwari && <span style={{ color: 'var(--color-warning)' }}>★</span>}
                 </td>
                 {event.deltas.map((d, pi) => {
                   const c = PLAYER_COLORS[pi % PLAYER_COLORS.length]

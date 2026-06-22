@@ -43,7 +43,7 @@ export function SummaryScreen({ state, onRestart }: Props) {
         </button>
         <button
           onClick={onRestart}
-          style={{ flex: 1, padding: '12px 0', fontSize: 14, background: 'var(--color-background-info)', color: 'var(--color-text-info)', border: 'none', fontWeight: 600 }}
+          style={{ flex: 1, padding: '12px 0', fontSize: 14, background: 'var(--color-accent)', color: 'var(--color-accent-contrast)', border: 'none', fontWeight: 600 }}
         >
           新しいゲーム
         </button>

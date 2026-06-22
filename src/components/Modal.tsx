@@ -53,8 +53,8 @@ export function ModalButton({
 }) {
   const styles: Record<string, React.CSSProperties> = {
     default: {},
-    primary: { background: 'var(--color-background-info)', color: 'var(--color-text-info)', border: 'none', fontWeight: 600 },
-    danger:  { background: '#B5453F', color: '#fff', border: 'none', fontWeight: 600 },
+    primary: { background: 'var(--color-accent)', color: 'var(--color-accent-contrast)', border: 'none', fontWeight: 600 },
+    danger:  { background: 'var(--color-danger)', color: '#fff', border: 'none', fontWeight: 600 },
   }
   return (
     <button onClick={onClick} style={{ flex: 1, padding: '9px 0', ...styles[variant] }}>

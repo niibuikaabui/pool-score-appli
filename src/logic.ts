@@ -1,12 +1,12 @@
 import type { GameState, GameSnapshot, PointValue, RackShot } from './types'
 
 export const PLAYER_COLORS = [
-  { bg: '#F2E4DC', btnBg: '#DCB8A3', accent: '#B5623A', text: '#4A2A18', subtext: '#7A4527', dash: [] },
-  { bg: '#E3EAE3', btnBg: '#B9CDB8', accent: '#5E8267', text: '#26392A', subtext: '#42624A', dash: [6,3] },
-  { bg: '#F1E8D6', btnBg: '#D9C291', accent: '#AD8434', text: '#4A3717', subtext: '#7A5C24', dash: [2,2] },
-  { bg: '#E9E2EE', btnBg: '#C9B6D6', accent: '#7C5C9E', text: '#352640', subtext: '#5A4470', dash: [8,3,2,3] },
-  { bg: '#E1E8EE', btnBg: '#AFC4D6', accent: '#4A7396', text: '#1E2E3B', subtext: '#36556D', dash: [4,4] },
-  { bg: '#F0E2E6', btnBg: '#D9AEBC', accent: '#A0566E', text: '#3F1B26', subtext: '#6B3548', dash: [10,3] },
+  { bg: '#EEF0FF', btnBg: '#C7C9F9', accent: '#635BFF', text: '#312E81', subtext: '#4B45C6', dash: [] },
+  { bg: '#E7F0FE', btnBg: '#B6D2F8', accent: '#2F7FED', text: '#1E3A8A', subtext: '#1D4ED8', dash: [6,3] },
+  { bg: '#E2F5F1', btnBg: '#A7E0D5', accent: '#0E9384', text: '#134E48', subtext: '#107569', dash: [2,2] },
+  { bg: '#E8F5E9', btnBg: '#AEDDB4', accent: '#1A8245', text: '#14532D', subtext: '#166534', dash: [8,3,2,3] },
+  { bg: '#FBF1DD', btnBg: '#EAD2A0', accent: '#B7791F', text: '#713F12', subtext: '#92600E', dash: [4,4] },
+  { bg: '#FCE9EE', btnBg: '#F3BACE', accent: '#E0356A', text: '#831843', subtext: '#BE185D', dash: [10,3] },
 ]
 
 export const POINT_LABELS: Record<PointValue, string> = { 1: '①', 2: '②', 4: '④' }

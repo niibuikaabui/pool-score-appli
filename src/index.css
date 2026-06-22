@@ -3,17 +3,38 @@
 @tailwind utilities;
 
 :root {
-  --color-background-primary: #F8F5F0;
-  --color-background-secondary: #EFEBE4;
-  --color-text-primary: #2A2520;
-  --color-text-secondary: #5F5A54;
-  --color-text-tertiary: #9A9288;
-  --color-background-info: #E3EDF4;
-  --color-text-info: #2C5F7A;
-  --color-border-secondary: rgba(42,37,32,0.12);
-  --color-border-tertiary: rgba(42,37,32,0.07);
-  --border-radius-md: 10px;
-  --border-radius-lg: 14px;
+  /* 背景・面 */
+  --color-background-primary: #FFFFFF;
+  --color-background-secondary: #F6F8FA;
+  --color-background-tertiary: #EEF1F6;
+
+  /* テキスト */
+  --color-text-primary: #1A1F36;
+  --color-text-secondary: #4F566B;
+  --color-text-tertiary: #8792A2;
+
+  /* アクセント（Stripe/Linear系インディゴ） */
+  --color-accent: #635BFF;
+  --color-accent-hover: #524DDB;
+  --color-accent-contrast: #FFFFFF;
+  --color-background-info: #EEF0FF;
+  --color-text-info: #4B45C6;
+
+  /* セマンティック */
+  --color-success: #1A8245;
+  --color-warning: #B7791F;
+  --color-danger: #DF1B41;
+  --color-danger-hover: #C01839;
+  --color-danger-bg: #FDECEF;
+  --color-danger-text: #B3093C;
+
+  /* 罫線 */
+  --color-border-primary: rgba(26,31,54,0.18);
+  --color-border-secondary: rgba(26,31,54,0.10);
+  --color-border-tertiary: rgba(26,31,54,0.06);
+
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
 }
 
 @layer base {

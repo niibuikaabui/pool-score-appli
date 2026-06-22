@@ -20,12 +20,12 @@ interface Props {
 }
 
 const dangerBtn: React.CSSProperties = {
-  background: '#F2E3E3',
-  color: '#7A2E2E',
-  border: '1.5px solid #B5453F',
+  background: 'var(--color-danger-bg)',
+  color: 'var(--color-danger-text)',
+  border: '1px solid var(--color-danger)',
 }
 
-type SettingsTab = 'order' | 'add' | 'history'
+type SettingsTab = 'settings' | 'order' | 'add' | 'history'
 
 export function ScoreScreen({
   state, canUndo,
@@ -87,7 +87,6 @@ export function ScoreScreen({
     closeSettings()
   }
 
-  const currentColor = PLAYER_COLORS[state.currentPlayerIdx % PLAYER_COLORS.length]
   const rackInProgress = state.rackShots.length > 0 || state.turnCountInRack > 1
   const scorerCount = new Set(state.rackShots.map(s => s.playerIdx)).size
   const addDisabled = rackInProgress || state.players.length >= 6
@@ -183,7 +182,7 @@ export function ScoreScreen({
           <button
             key={v}
             onClick={() => onShot(v)}
-            style={{ background: currentColor.btnBg, color: currentColor.text, border: 'none', borderRadius: 'var(--border-radius-md)', padding: '16px 0', fontSize: 20, fontWeight: 500 }}
+            style={{ background: 'var(--color-accent)', color: 'var(--color-accent-contrast)', border: 'none', borderRadius: 'var(--border-radius-md)', padding: '16px 0', fontSize: 20, fontWeight: 600 }}
           >
             +{v}
           </button>
@@ -202,18 +201,11 @@ export function ScoreScreen({
           </button>
           <button
             onClick={handleNextRack}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '13px 0', fontSize: 15, fontWeight: 500, background: 'var(--color-text-info)', color: '#fff', border: 'none', opacity: scorerCount === 0 ? 0.35 : 1, pointerEvents: scorerCount === 0 ? 'none' : 'auto', transition: 'opacity .15s' }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '13px 0', fontSize: 15, fontWeight: 600, background: 'var(--color-success)', color: '#fff', border: 'none', opacity: scorerCount === 0 ? 0.35 : 1, pointerEvents: scorerCount === 0 ? 'none' : 'auto', transition: 'opacity .15s' }}
           >
             <i className="ti ti-flag" style={{ fontSize: 16 }} />次のラック
           </button>
         </div>
-      </div>
-
-      {/* ゲーム終了ボタン（最下部） */}
-      <div style={{ padding: '16px 24px 0' }}>
-        <button onClick={() => setShowEndConfirm(true)} style={{ ...dangerBtn, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%', padding: '11px 0' }}>
-          <i className="ti ti-square-rounded-x" style={{ fontSize: 16 }} />ゲーム終了
-        </button>
       </div>
 
       {/* 設定モーダル */}
@@ -221,6 +213,9 @@ export function ScoreScreen({
         <Modal title="設定" onClose={closeSettings}>
           {/* タブ */}
           <div style={{ display: 'flex', borderBottom: '0.5px solid var(--color-border-tertiary)', margin: '0 -1.25rem 14px', padding: '0 1.25rem' }}>
+            <button style={tabStyle('settings')} onClick={() => setSettingsTab('settings')}>
+              <i className="ti ti-settings" style={{ fontSize: 14 }} />設定
+            </button>
             <button style={tabStyle('order')} onClick={() => setSettingsTab('order')}>
               <i className="ti ti-arrows-sort" style={{ fontSize: 14 }} />順番
             </button>
@@ -268,9 +263,14 @@ export function ScoreScreen({
               <ModalActions>
                 <ModalButton onClick={() => { onChangeOrder(orderList); closeSettings() }} variant="primary">決定</ModalButton>
               </ModalActions>
+            </div>
+          )}
 
+          {/* 設定タブ */}
+          {settingsTab === 'settings' && (
+            <div>
               {/* 順番回数を管理しないモード トグル */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '12px 0 2px', borderTop: '0.5px solid var(--color-border-tertiary)', marginTop: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '4px 0' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 500 }}>ラック内の順番回数を管理しない</div>
                   <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 2 }}>
@@ -281,9 +281,16 @@ export function ScoreScreen({
                   onClick={() => { if (!freeSelect) setShowFreeSelectConfirm(true) }}
                   disabled={freeSelect}
                   aria-label="ラック内の順番回数を管理しないモード"
-                  style={{ width: 44, height: 26, borderRadius: 999, border: 'none', padding: 0, flexShrink: 0, background: freeSelect ? 'var(--color-text-info)' : 'var(--color-border-secondary)', position: 'relative', cursor: freeSelect ? 'default' : 'pointer', transition: 'background .15s' }}
+                  style={{ width: 44, height: 26, borderRadius: 999, border: 'none', padding: 0, flexShrink: 0, background: freeSelect ? 'var(--color-accent)' : 'var(--color-border-secondary)', position: 'relative', cursor: freeSelect ? 'default' : 'pointer', transition: 'background .15s' }}
                 >
                   <span style={{ position: 'absolute', top: 3, left: freeSelect ? 21 : 3, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left .15s' }} />
+                </button>
+              </div>
+
+              {/* ゲーム終了ボタン */}
+              <div style={{ borderTop: '0.5px solid var(--color-border-tertiary)', marginTop: 14, paddingTop: 14 }}>
+                <button onClick={() => { closeSettings(); setShowEndConfirm(true) }} style={{ ...dangerBtn, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%', padding: '11px 0' }}>
+                  <i className="ti ti-square-rounded-x" style={{ fontSize: 16 }} />ゲーム終了
                 </button>
               </div>
             </div>
@@ -339,7 +346,7 @@ export function ScoreScreen({
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-text-primary)', flexShrink: 0, display: 'inline-block' }} />
                         <span style={{ fontSize: 13, fontWeight: 500 }}>
-                          ラック{event.rackNumber} 終了{event.masuwari && <span style={{ color: '#AD8434' }}>・マスワリ!</span>}
+                          ラック{event.rackNumber} 終了{event.masuwari && <span style={{ color: 'var(--color-warning)' }}>・マスワリ!</span>}
                         </span>
                       </div>
                       <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 2, paddingLeft: 16 }}>{detail}</div>

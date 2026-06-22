@@ -45,7 +45,7 @@ export function PlayerCard({ player, colorIdx, isActive, rackShots, rackDelta, o
           </span>
         </div>
         {isActive && (
-          <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 999, fontWeight: 500, background: c.accent, color: c.text, flexShrink: 0, marginLeft: 4 }}>{activeLabel}</span>
+          <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 999, fontWeight: 600, background: c.accent, color: '#fff', flexShrink: 0, marginLeft: 4 }}>{activeLabel}</span>
         )}
       </div>
 
