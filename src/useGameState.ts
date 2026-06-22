@@ -9,6 +9,8 @@ import {
   addPlayer,
   snapshot,
   restoreSnapshot,
+  selectPlayer as selectPlayerLogic,
+  enableFreeSelect as enableFreeSelectLogic,
 } from './logic'
 
 const STORAGE_KEY = 'pool_game_state'
@@ -78,6 +80,14 @@ export function useGameState() {
     update(addPlayer(state, name))
   }, [state, update, pushUndo])
 
+  const selectPlayer = useCallback((idx: number) => {
+    update(selectPlayerLogic(state, idx))
+  }, [state, update])
+
+  const enableFreeSelect = useCallback(() => {
+    update(enableFreeSelectLogic(state))
+  }, [state, update])
+
   const finishGame = useCallback(() => {
     update({ ...state, finished: true })
   }, [state, update])
@@ -96,6 +106,8 @@ export function useGameState() {
     finishRack,
     changeOrder,
     addNewPlayer,
+    selectPlayer,
+    enableFreeSelect,
     finishGame,
     resetGame,
     undo,

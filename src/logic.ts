@@ -24,7 +24,18 @@ export function createInitialState(playerNames: string[], pointBall = 5, finalBa
     finished: false,
     pointBall,
     finalBall,
+    freeSelect: false,
   }
+}
+
+// プレイヤーを選択（手番を直接切り替え。順番管理しないモードで使用）
+export function selectPlayer(state: GameState, idx: number): GameState {
+  return { ...state, currentPlayerIdx: idx }
+}
+
+// 順番回数を管理しないモードを有効化（一度ONにすると戻せない）
+export function enableFreeSelect(state: GameState): GameState {
+  return { ...state, freeSelect: true }
 }
 
 export function snapshot(state: GameState): GameSnapshot {

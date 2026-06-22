@@ -64,6 +64,7 @@ export interface GameState {
   finished: boolean
   pointBall: number           // 点球の番号（デフォルト5）
   finalBall: 9 | 10           // 最終球
+  freeSelect: boolean         // ラック内の順番回数を管理しないモード（一度ONにすると戻せない）
 }
 
 export interface GameSnapshot {

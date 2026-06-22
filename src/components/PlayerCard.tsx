@@ -8,24 +8,34 @@ interface Props {
   rackShots: RackShot[]
   rackDelta: number
   order: number
+  selectable?: boolean
+  onSelect?: () => void
+  activeLabel?: string
 }
 
-export function PlayerCard({ player, colorIdx, isActive, rackShots, rackDelta, order }: Props) {
+export function PlayerCard({ player, colorIdx, isActive, rackShots, rackDelta, order, selectable, onSelect, activeLabel = '手番' }: Props) {
   const c = PLAYER_COLORS[colorIdx % PLAYER_COLORS.length]
   const myShots = rackShots.filter(s => s.playerIdx === player.id)
 
   return (
-    <div style={{
-      order,
-      background: isActive ? c.bg : 'var(--color-background-secondary)',
-      borderRadius: 'var(--border-radius-lg)',
-      padding: '1rem',
-      border: `3px solid ${isActive ? c.accent : 'transparent'}`,
-      transform: isActive ? 'scale(1.02)' : 'scale(1)',
-      transition: 'transform 0.15s, background-color 0.15s, border-color 0.15s',
-      flex: '1',
-      minWidth: 0,
-    }}>
+    <div
+      onClick={selectable ? onSelect : undefined}
+      role={selectable ? 'button' : undefined}
+      style={{
+        order,
+        background: isActive ? c.bg : 'var(--color-background-secondary)',
+        borderRadius: 'var(--border-radius-lg)',
+        padding: '1rem',
+        border: `3px solid ${isActive ? c.accent : 'transparent'}`,
+        transform: isActive ? 'scale(1.02)' : 'scale(1)',
+        transition: 'transform 0.15s, background-color 0.15s, border-color 0.15s',
+        flex: '1',
+        minWidth: 0,
+        cursor: selectable ? 'pointer' : 'default',
+        userSelect: 'none',
+        WebkitTapHighlightColor: 'transparent',
+      }}
+    >
       {/* 名前行: 高さ固定 */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 28, marginBottom: 6 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
@@ -35,7 +45,7 @@ export function PlayerCard({ player, colorIdx, isActive, rackShots, rackDelta, o
           </span>
         </div>
         {isActive && (
-          <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 999, fontWeight: 500, background: c.accent, color: c.text, flexShrink: 0, marginLeft: 4 }}>手番</span>
+          <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 999, fontWeight: 500, background: c.accent, color: c.text, flexShrink: 0, marginLeft: 4 }}>{activeLabel}</span>
         )}
       </div>
 

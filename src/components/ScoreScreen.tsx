@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import type { GameState, PointValue } from '../types'
 import { PLAYER_COLORS, isMasuwariPossible, shuffleExceptCurrent, POINT_LABELS } from '../logic'
 import { PlayerCard } from './PlayerCard'
-import { HistoryPanel } from './HistoryPanel'
 import { Modal, ModalActions, ModalButton } from './Modal'
 import type { HistoryEvent } from '../types'
 
@@ -14,6 +13,8 @@ interface Props {
   onFinishRack: (masuwari: boolean) => void
   onChangeOrder: (order: number[]) => void
   onAddPlayer: (name: string) => void
+  onSelectPlayer: (idx: number) => void
+  onEnableFreeSelect: () => void
   onFinishGame: () => void
   onUndo: () => void
 }
@@ -28,7 +29,7 @@ type SettingsTab = 'order' | 'add' | 'history'
 
 export function ScoreScreen({
   state, canUndo,
-  onShot, onPass, onFinishRack, onChangeOrder, onAddPlayer, onFinishGame, onUndo,
+  onShot, onPass, onFinishRack, onChangeOrder, onAddPlayer, onSelectPlayer, onEnableFreeSelect, onFinishGame, onUndo,
 }: Props) {
   const [showSettings, setShowSettings] = useState(false)
   const [settingsTab, setSettingsTab] = useState<SettingsTab>('order')
@@ -36,9 +37,12 @@ export function ScoreScreen({
   const [showMasuwari, setShowMasuwari] = useState(false)
   const [show10Rack, setShow10Rack] = useState(false)
   const [showEndConfirm, setShowEndConfirm] = useState(false)
+  const [showFreeSelectConfirm, setShowFreeSelectConfirm] = useState(false)
   const [newPlayerName, setNewPlayerName] = useState('')
   const [flashing, setFlashing] = useState(false)
   const prevRackRef = useRef(state.rackNumber)
+
+  const freeSelect = state.freeSelect
 
   useEffect(() => {
     if (state.rackNumber !== prevRackRef.current) {
@@ -134,9 +138,11 @@ export function ScoreScreen({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', gap: 8, flexWrap: 'wrap', padding: '12px 24px 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 15, fontWeight: 500 }}>ラック {state.rackNumber}</span>
-          <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)', background: 'var(--color-background-secondary)', padding: '3px 9px', borderRadius: 999 }}>
-            {state.turnCountInRack}人目
-          </span>
+          {!freeSelect && (
+            <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)', background: 'var(--color-background-secondary)', padding: '3px 9px', borderRadius: 999 }}>
+              {state.turnCountInRack}人目
+            </span>
+          )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button onClick={() => openSettings('order')} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -164,6 +170,9 @@ export function ScoreScreen({
             rackShots={state.rackShots}
             rackDelta={rackDeltas[playerIdx]}
             order={order}
+            selectable={freeSelect}
+            onSelect={() => onSelectPlayer(playerIdx)}
+            activeLabel={freeSelect ? '選択' : '手番'}
           />
         ))}
       </div>
@@ -186,7 +195,8 @@ export function ScoreScreen({
         <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           <button
             onClick={onPass}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '13px 0', fontSize: 15, fontWeight: 500, background: 'var(--color-text-tertiary)', color: '#fff', border: 'none' }}
+            disabled={freeSelect}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '13px 0', fontSize: 15, fontWeight: 500, background: 'var(--color-text-tertiary)', color: '#fff', border: 'none', opacity: freeSelect ? 0.35 : 1, pointerEvents: freeSelect ? 'none' : 'auto', transition: 'opacity .15s' }}
           >
             <i className="ti ti-player-track-next" style={{ fontSize: 16 }} />次のプレイヤー
           </button>
@@ -243,7 +253,7 @@ export function ScoreScreen({
                     <div key={playerIdx} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '0.5px solid var(--color-border-tertiary)' }}>
                       <span style={{ width: 9, height: 9, borderRadius: '50%', background: c.accent, flexShrink: 0, display: 'inline-block' }} />
                       <span style={{ fontSize: 13, flex: 1 }}>
-                        {player.name}{isCurrent && <span style={{ color: 'var(--color-text-tertiary)' }}> (手番中)</span>}
+                        {player.name}{isCurrent && <span style={{ color: 'var(--color-text-tertiary)' }}>{freeSelect ? ' (選択中)' : ' (手番中)'}</span>}
                       </span>
                       <button onClick={() => moveUp(pos)} disabled={pos === 0} style={{ padding: '2px 8px', opacity: pos === 0 ? 0.3 : 1 }}>
                         <i className="ti ti-chevron-up" style={{ fontSize: 14 }} />
@@ -258,6 +268,24 @@ export function ScoreScreen({
               <ModalActions>
                 <ModalButton onClick={() => { onChangeOrder(orderList); closeSettings() }} variant="primary">決定</ModalButton>
               </ModalActions>
+
+              {/* 順番回数を管理しないモード トグル */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '12px 0 2px', borderTop: '0.5px solid var(--color-border-tertiary)', marginTop: 14 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500 }}>ラック内の順番回数を管理しない</div>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 2 }}>
+                    {freeSelect ? 'ゲーム終了まで変更できません' : 'プレイヤーを選んで加点するモード'}
+                  </div>
+                </div>
+                <button
+                  onClick={() => { if (!freeSelect) setShowFreeSelectConfirm(true) }}
+                  disabled={freeSelect}
+                  aria-label="ラック内の順番回数を管理しないモード"
+                  style={{ width: 44, height: 26, borderRadius: 999, border: 'none', padding: 0, flexShrink: 0, background: freeSelect ? 'var(--color-text-info)' : 'var(--color-border-secondary)', position: 'relative', cursor: freeSelect ? 'default' : 'pointer', transition: 'background .15s' }}
+                >
+                  <span style={{ position: 'absolute', top: 3, left: freeSelect ? 21 : 3, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left .15s' }} />
+                </button>
+              </div>
             </div>
           )}
 
@@ -338,6 +366,15 @@ export function ScoreScreen({
               })}
             </div>
           )}
+        </Modal>
+      )}
+
+      {showFreeSelectConfirm && (
+        <Modal title="モードを変更しますか?" description="一度変更するとゲーム終了まで設定を戻せません。" onClose={() => setShowFreeSelectConfirm(false)}>
+          <ModalActions>
+            <ModalButton onClick={() => setShowFreeSelectConfirm(false)}>キャンセル</ModalButton>
+            <ModalButton onClick={() => { onEnableFreeSelect(); setShowFreeSelectConfirm(false) }} variant="danger">変更する</ModalButton>
+          </ModalActions>
         </Modal>
       )}
 

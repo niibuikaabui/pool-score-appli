@@ -9,7 +9,7 @@ type Phase = 'setup' | 'playing' | 'finished'
 type Tab = 'score' | 'progress'
 
 export default function App() {
-  const { state, undoStack, shot, pass, finishRack, changeOrder, addNewPlayer, finishGame, resetGame, undo, canUndo } = useGameState()
+  const { state, shot, pass, finishRack, changeOrder, addNewPlayer, selectPlayer, enableFreeSelect, finishGame, resetGame, undo, canUndo } = useGameState()
   const [phase, setPhase] = useState<Phase>(() => {
     try {
       const saved = localStorage.getItem('pool_game_state')
@@ -74,6 +74,8 @@ export default function App() {
           onFinishRack={finishRack}
           onChangeOrder={changeOrder}
           onAddPlayer={addNewPlayer}
+          onSelectPlayer={selectPlayer}
+          onEnableFreeSelect={enableFreeSelect}
           onFinishGame={handleFinish}
           onUndo={undo}
         />
